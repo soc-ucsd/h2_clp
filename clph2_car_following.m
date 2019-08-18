@@ -50,15 +50,30 @@ P = ss(A,B,C,D,deltaT);  % discrete time model -- transfer matrices
 [K,CL,gamma,info] = h2syn(P,p,m);
 
 %% H2 synthesis via Closed-loop parameterization
-opts.N       = 15;
-opts.solver  = 'sedumi';
-% SLS
-opts.type    = 1;
-[Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
 
-% IOP
-opts.type    = 2;
-[Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts);
+N = 10:10:50;
+N = [N,75,100];
 
+H2optimal = zeros(length(N),4);
+
+for k = 1:length(N)
+
+    opts.N       = N(k);
+    opts.solver  = 'sedumi';
+    % SLS
+    opts.type    = 1;
+    [Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
+
+    % IOP
+    opts.type    = 2;
+    [Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts);
+    
+    % Type 3 -- to do
+    
+    % Type 4 -- to do
+    
+    H2optimal(k,1:2) = [H2iop,H2sls];
+
+end
 
 [gamma,H2iop,H2sls]
