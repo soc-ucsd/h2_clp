@@ -1,4 +1,4 @@
-function [K,H2,info] = clph2(A,B,C,Q,R,userOpts)
+function [K,H2,info] = clph2(A,B,C,Q,R,userOpts,T_struct,R_struct)
 %
 % close-loop parameterization of H2 optimal control for discrete-time systems
 %
@@ -11,13 +11,13 @@ function [K,H2,info] = clph2(A,B,C,Q,R,userOpts)
 %      N:     Oder of FIR approximation (default:8)
 %      solver: sedumi, sdpt3, csdp or mosek (default)
 
-% The plant dynamics are: 
+% The plant dynamics are:
 %                           x = Ax_t + Bu_t
 %                           y = Cx_t
 % The orginal problem is as follows
 %               min_{K} max_{G} ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
 %                  subject to     K internally stabilizes G
-%                                 K \in S 
+%                                 K \in S
 % where Y, U denote the closed-loop transfer matrices from w to y and u,
 % respectively.
 %
@@ -26,7 +26,7 @@ function [K,H2,info] = clph2(A,B,C,Q,R,userOpts)
 %
 %   min_{beta \in [0,1/gamma)}  min_{Y,U,W,Z}  ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
 %               subjec to      [I -G][Y W]
-%                                    [U Z]  = [I 0]   (1) 
+%                                    [U Z]  = [I 0]   (1)
 %                                 [Y W][-G] = [I]
 %                                 [U Z][I]    [0]     (2)
 %                              Y,U,W,Z \in FIR(N)     (3)
@@ -87,8 +87,11 @@ switch Type
         % achivability constraint (1)-(3)
         fprintf('Step 1: Encoding the achievability constraints ...\n')
         const = slscons(A,B,C,CRv,CMv,CNv,CLv,N);
+        sls_sparsity_cons
+        %const=[const, const_sparsity];
         
-        % H2 cost 
+        
+        % H2 cost
         fprintf('Step 2: Encoding the H2 cost ...\n')
         cost   = slscost(CNv,CLv,Q,R,C,N);
         
@@ -98,27 +101,52 @@ switch Type
         CUv = sdpvar(m,p*(N+1));          % decision variables for U
         CWv = sdpvar(p,m*(N+1));          % decision variables for W
         CZv = sdpvar(m,m*(N+1));          % decision variables for Z
-
+        
         % achivability constraint (1)-(3)
         fprintf('Step 1: Encoding the achievability constraints ...\n')
         const = iopcons(G,CYv,CUv,CWv,CZv,N,z);
+        iop_sparsity_cons
         
-        % H2 cost 
+        % H2 cost
         fprintf('Step 2: Encoding the H2 cost ...\n')
         cost   = iopcost(CYv,CUv,Q,R,N);
-
+        
     case 3
-        disp('to do')
+        YXv = sdpvar(p,n*(N+1));          % decision variables for Y
+        YYv = sdpvar(p,p*(N+1));          % decision variables for U
+        UXv = sdpvar(m,n*(N+1));          % decision variables for W
+        UYv = sdpvar(m,p*(N+1));          % decision variables for Z
+        
+        % achivability constraint (1)-(3)
+        fprintf('Step 1: Encoding the achievability constraints ...\n')
+        const = par3cons(G,YXv,YYv,UXv,UYv,N,z,A,C);
+        par3_sparsity_cons
+        
+        % H2 cost
+        fprintf('Step 2: Encoding the H2 cost ...\n')
+        cost   = par3cost(YYv,UYv,Q,R,N);
         
     case 4
-        disp('to do')
+        XYv = sdpvar(n,p*(N+1));          % decision variables for Y
+        XUv = sdpvar(n,m*(N+1));          % decision variables for U
+        UYv = sdpvar(m,p*(N+1));          % decision variables for W
+        UUv = sdpvar(m,m*(N+1));          % decision variables for Z
+        
+        % achivability constraint (1)-(3)
+        fprintf('Step 1: Encoding the achievability constraints ...\n')
+        const = par4cons(G,XYv,XUv,UYv,UUv,N,z,A,B);
+        par4_sparsity_cons
+        
+        % H2 cost
+        fprintf('Step 2: Encoding the H2 cost ...\n')
+        cost   = par4cost(XYv,UYv,Q,R,N,C,n);
         
     otherwise
         error('Unknown parameterizaiton')
 end
 
 
-% Get a solution 
+% Get a solution
 fprintf('Step 3: call a solver to get a solution...\n\n');
 yalmipOpts = sdpsettings('solver',opts.solver,'verbose',opts.verbose);
 sol        = optimize(const,cost,yalmipOpts);
@@ -149,7 +177,7 @@ switch Type
         temp = C*info.var.N;
         temp(:,1:p) = temp(1:p) + eye(p);
         K = Kstatereal(info.var.L,temp,N);  % state space realizaiton K = L(CN+I)^(-1)
-
+        
         %  closed-loop responses from optimization
         z = tf('z');
         Rt = zeros(n,n); Mt = zeros(m,n); Nt = zeros(n,p); Lt = zeros(m,p);
@@ -157,7 +185,7 @@ switch Type
             Rt = Rt + info.var.R(:,n*(k-1)+1:n*k)*z^(1-k);  % FIR
             Mt = Mt + info.var.M(:,n*(k-1)+1:n*k)*z^(1-k);  % FIR
             Nt = Nt + info.var.N(:,p*(k-1)+1:p*k)*z^(1-k);  % FIR
-            Lt = Lt + info.var.L(:,p*(k-1)+1:p*k)*z^(1-k);  % FIR  
+            Lt = Lt + info.var.L(:,p*(k-1)+1:p*k)*z^(1-k);  % FIR
         end
         info.cl.R = Rt;
         info.cl.M = Mt;
@@ -169,7 +197,7 @@ switch Type
         info.var.Y  = round(value(CYv),opts.eps);
         info.var.U  = round(value(CUv),opts.eps);
         info.var.W  = round(value(CWv),opts.eps);
-        info.var.Z  = round(value(CZv),opts.eps);        
+        info.var.Z  = round(value(CZv),opts.eps);
         K           = Kstatereal(info.var.U,info.var.Y,N);  % state-space realization
         info.Ks     = K;
         %  closed-loop responses from optimization
@@ -177,16 +205,18 @@ switch Type
         Y = zeros(p,p); U = zeros(m,p);
         for k = 1:N+1
             Y = Y + info.var.Y(:,p*(k-1)+1:p*k)*z^(1-k);  % FIR
-            U = U + info.var.U(:,p*(k-1)+1:p*k)*z^(1-k);  % FIR    
+            U = U + info.var.U(:,p*(k-1)+1:p*k)*z^(1-k);  % FIR
         end
         info.cl.Y = Y;
         info.cl.U = U;
-
+        
     case 3
         disp('to do')
+        K=0;
         
     case 4
         disp('to do')
+        K=0;
         
     otherwise
         error('Unknown parameterizaiton')
