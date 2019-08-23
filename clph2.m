@@ -138,8 +138,8 @@ end
 %                            Post process
 % ========================================================================
 
-info.H2 = H2;  %  H2 norm of the normial system
-
+info.H2      = H2;  %  H2 norm of the normial system
+info.problem = sol.problem;
 switch Type
     case 1    % sls
         info.var.R = value(CRv);

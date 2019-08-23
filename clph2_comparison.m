@@ -1,5 +1,6 @@
-%% Comparsion with centralized H2, IOP, SLS in the standard case
-
+%% Comparsion with centralized H2, IOP, SLS 
+% If the plant has uncontrollable and unobserable stable modes, IOP is
+% better than SLS
 
 clc; clear all; close all
 clear yalmip
@@ -20,8 +21,17 @@ r = p;  % number of disturbances
 Q = eye(p);
 R = eye(m);
 
-A   = randi([-15,15],n,n)/5; B1 = zeros(n,r); B2  = randi([-2,2],n,m);
-C2  = randi([-2,2],p,n);  D21 = eye(p);     D22 = zeros(p,m);
+A   = randi([-15,15],n,n)/5; B2  = randi([-2,2],n,m);
+C2  = randi([-2,2],p,n);  
+
+% create an uncontrollable and unobserable stable mode
+n = n + 1;
+A = blkdiag(rand(1),A);B2 = [zeros(1,m);B2]; C2  = [zeros(p,1),C2];  
+
+[n,rank(ctrb(A,B2)),rank(obsv(A,C2))]
+
+B1 = zeros(n,r); 
+D21 = eye(p);     D22 = zeros(p,m);
 C1  = [Q^(0.5)*C2;
         zeros(m,n)];
 D11 = [Q^(0.5);
@@ -41,9 +51,9 @@ P = ss(A,B,C,D,[]);  % discrete time model -- transfer matrices
 [K,CL,gamma,info] = h2syn(P,p,m);
 
 %% IOP
-opts.N       = n;
+opts.N       = 8;
 opts.type    = 2;
-opts.solver  = 'sedumi';
+opts.solver  = 'mosek';
 [Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts);
 
 %% SLS
