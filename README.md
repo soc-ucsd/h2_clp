@@ -24,7 +24,7 @@ where Y, U denote the closed-loop transfer matrices from w to y and u, respectiv
                              Y,U,W,Z \in FIR(N)      (3)
                               Y \in R,  U \in T      (4)
 
-where (1)-(3) encodes the internal stability constraint, and (4) encodes the sparsity constraint S using the notion of Sparsity invariance.
+where (1)-(3) encode the internal stability constraint, and (4) encodes the sparsity constraint S using the notion of Sparsity invariance.
 
 Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/SeDuMi to get a soluton
 
