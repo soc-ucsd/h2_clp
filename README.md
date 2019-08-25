@@ -1,7 +1,7 @@
 # H2 controller synthesis using closed-loop parameterizations
 
 ## Related paper
-On the closed-loop parameterization of stabilizing controllers, in final preparation.
+Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the closed-loop parameterization of stabilizing controllers, in final preparation.
 
 ## Problem description
  The plant dynamics are:
