@@ -19,10 +19,10 @@ r = p;  % number of disturbances
 Q = eye(p);
 R = eye(m);
 
-tau    = 0.5;    % tau in the dynamics
+tau    = 5;    % tau in the dynamics
 deltaT = 0.1;    % discrete time interval
 
-A   = eye(n) + [0 1 0;
+A   = eye(n) + 10*[0 1 0;
                 0 0 1;
                 0 0 -1/tau]*deltaT; 
 B2  = [0;0;1/tau]*deltaT;   
@@ -47,12 +47,12 @@ D = [D11 D12;
 P = ss(A,B,C,D,deltaT);  % discrete time model -- transfer matrices
 
 %% standard H2 control
-[K,CL,gamma,info] = h2syn(P,p,m);
+%[K,CL,gamma,info] = h2syn(P,p,m);
 
 %% H2 synthesis via Closed-loop parameterization
 
-N = 10:10:50;
-N = [N,75,100];
+N = 1 :1:10;
+%N = [N,75,100];
 
 H2optimal = zeros(length(N),4);
 
@@ -76,4 +76,4 @@ for k = 1:length(N)
 
 end
 
-[gamma,H2iop,H2sls]
+H2optimal

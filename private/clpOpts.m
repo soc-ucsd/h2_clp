@@ -1,7 +1,10 @@
 function options = clpOpts
     options.N       = 8;
     options.type    = 2;    % which parameterization is used
+    options.spa     = 0;    % No sparsity on controller structure
     options.S       = [];   % no controller structure
+    options.T       = [];
+    options.R       = [];
     options.gamma   = [];   % no robust stability constraint
     options.solver  = 'mosek';
     options.bisec   = 0;    % no golden section iteration
