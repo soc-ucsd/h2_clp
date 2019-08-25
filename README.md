@@ -1,8 +1,5 @@
 # H2 controller synthesis using closed-loop parameterizations
 
-## Related paper
-Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the closed-loop parameterization of stabilizing controllers, in final preparation.
-
 ## Problem description
  The plant dynamics are:
                            x = Ax_t + Bu_t
@@ -24,7 +21,7 @@ Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the closed-loop parameterization o
                               Y \in R,  U \in T      (4)
 
 
- Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/SeDuMi to get a soluton
+Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/SeDuMi to get a soluton
 
 ## Syntax
 
@@ -40,3 +37,7 @@ Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the closed-loop parameterization o
       solver: sedumi, sdpt3, csdp or mosek (default)
       spa:    Distributed control Yes/No   (default: 0)
       S:      Sparsity pattern for the controller  (default: [])
+      
+## Related paper
+Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the closed-loop parameterization of stabilizing controllers, in final preparation.
+
