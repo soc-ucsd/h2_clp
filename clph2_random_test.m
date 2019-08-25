@@ -64,9 +64,10 @@ P = ss(A,B,C,D,[]);  % discrete time model -- transfer matrices
 %[K,CL,gamma,info] = h2syn(P,p,m);
 
 %% IOP
-%opts.N       = 10;
-%%opts.solver  = 'mosek';
-%[Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts,T_struct,R_struct);
+opts.N       = n;
+opts.type    = 2;
+opts.solver  = 'sedumi';
+[Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts);
 
 %% SLS
 %opts.type    = 1;

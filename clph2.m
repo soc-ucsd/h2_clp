@@ -202,8 +202,8 @@ end
 %                            Post processing
 % ========================================================================
 
-info.H2 = H2;  %  H2 norm of the normial system
-
+info.H2      = H2;  %  H2 norm of the normial system
+info.problem = sol.problem;
 switch Type
     case 1    % sls
         [info,K] = slspost(CRv,CMv,CNv,CLv,C,N,m,n,p,info); 
