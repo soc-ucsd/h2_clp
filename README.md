@@ -1,18 +1,18 @@
 # H2 controller synthesis using closed-loop parameterizations
 
 ## Problem description
- The plant dynamics are:
+The plant dynamics are:
  
                            x = Ax_t + Bu_t
                            y = Cx_t + w_t
                            
- The orginal problem is as follows
+The orginal problem is as follows
  
                       min_{K}    ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
                   subject to     K internally stabilizes G
                                  K \in S
                                  
- where Y, U denote the closed-loop transfer matrices from w to y and u, respectively.
+where Y, U denote the closed-loop transfer matrices from w to y and u, respectively, S is a binary matrix that encode the controller structure.
 
  We solve the problem using closed-loop parameterizations, one of them is as follows
 
@@ -21,9 +21,10 @@
                                     [U Z]  = [I 0]   (1)
                                  [Y W][-G] = [I]
                                  [U Z][I]    [0]     (2)
-                             Y,U,W,Z \in FIR(N)     (3)
+                             Y,U,W,Z \in FIR(N)      (3)
                               Y \in R,  U \in T      (4)
 
+where (1)-(3) encodes the internal stability constraint, and (4) encodes the sparsity constraint S using the notion of Sparsity invariance.
 
 Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/SeDuMi to get a soluton
 
