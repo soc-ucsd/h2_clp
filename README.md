@@ -2,12 +2,16 @@
 
 ## Problem description
  The plant dynamics are:
+ 
                            x = Ax_t + Bu_t
                            y = Cx_t + w_t
+                           
  The orginal problem is as follows
-               min_{K} max_{G} ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
+ 
+                      min_{K}    ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
                   subject to     K internally stabilizes G
                                  K \in S
+                                 
  where Y, U denote the closed-loop transfer matrices from w to y and u, respectively.
 
  We solve the problem using closed-loop parameterizations, one of them is as follows
