@@ -13,8 +13,8 @@ clear yalmip
 % n = 5; m = 2; p = 2;
 
 n = 2;  % number of states
-p = 1;  % number of outputs
-m = 1;  % number of inputs
+p = 2;  % number of outputs
+m = 2;  % number of inputs
 r = p;  % number of disturbances
 %q = 2*p;  % number of performance signals
 
@@ -25,10 +25,10 @@ A   = randi([-15,15],n,n)/5; B2  = randi([-2,2],n,m);
 C2  = randi([-2,2],p,n);  
 
 % create an uncontrollable and unobserable stable mode
-n = n + 1;
-A = blkdiag(rand(1),A);B2 = [zeros(1,m);B2]; C2  = [zeros(p,1),C2];  
+%n = n + 1;
+%A = blkdiag(rand(1),A);B2 = [zeros(1,m);B2]; C2  = [zeros(p,1),C2];  
 
-[n,rank(ctrb(A,B2)),rank(obsv(A,C2))]
+%[n,rank(ctrb(A,B2)),rank(obsv(A,C2))]
 
 B1 = zeros(n,r); 
 D21 = eye(p);     D22 = zeros(p,m);
@@ -48,7 +48,7 @@ D = [D11 D12;
 P = ss(A,B,C,D,[]);  % discrete time model -- transfer matrices
 
 %% standard H2 control
-[K,CL,gamma,info] = h2syn(P,p,m);
+%[K,CL,gamma,info] = h2syn(P,p,m);
 
 %% IOP
 opts.N       = 8;
@@ -60,4 +60,10 @@ opts.solver  = 'mosek';
 opts.type    = 1;
 [Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
 
-[gamma,H2iop,H2sls]
+[H2iop,H2sls]
+
+%%Test stability of SLS/IOP
+fprintf('The eigenvalues of Acl with Ksls are:\n')
+eig([A+B2*Ksls.D*C2 B2*Ksls.C;Ksls.B*C2 Ksls.A])
+fprintf('The eigenvalues of Acl with Kiop are:\n')
+eig([A+B2*Kiop.D*C2 B2*Kiop.C;Kiop.B*C2 Kiop.A])

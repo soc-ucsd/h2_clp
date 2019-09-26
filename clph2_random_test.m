@@ -140,6 +140,8 @@ H2optimal_centralized
 H2optimal_distributed
 
 
+
+
 %tf controllers
 %z=sym('z');
 %Kiop_tf=vpa(simplifyFraction(Kiop.C*inv(z*eye(size(Kiop.A,1))-Kiop.A)*Kiop.B+Kiop.D),3);
