@@ -1,6 +1,6 @@
 function [K,H2,info] = clph2(A,B,C,Q,R,userOpts)
 %
-% clph2: Close-loop arameterization of H2 optimal control for discrete-time systems
+% clph2: Close-loop parameterization of H2 optimal control for discrete-time systems
 %
 % Input variables
 %      (A,B,C):    system dynamics in discrete time

@@ -62,8 +62,40 @@ opts.type    = 1;
 
 [H2iop,H2sls]
 
-%%Test stability of SLS/IOP
-fprintf('The eigenvalues of Acl with Ksls are:\n')
-eig([A+B2*Ksls.D*C2 B2*Ksls.C;Ksls.B*C2 Ksls.A])
-fprintf('The eigenvalues of Acl with Kiop are:\n')
-eig([A+B2*Kiop.D*C2 B2*Kiop.C;Kiop.B*C2 Kiop.A])
+%% Test stability of SLS/IOP
+%fprintf('The eigenvalues of Acl with Ksls are:\n')
+%eig([A+B2*Ksls.D*C2 B2*Ksls.C;Ksls.B*C2 Ksls.A])
+%fprintf('The eigenvalues of Acl with Kiop are:\n')
+%eig([A+B2*Kiop.D*C2 B2*Kiop.C;Kiop.B*C2 Kiop.A])
+
+%% closed-loop systems 
+G      = ss(A,B2,C2,[],[]);
+% sls
+CLsls  = feedback(G,Ksls,+1);
+% pole(CLsls)
+% tzero(CLsls)
+tol = 1e-6;
+CLslsr = minreal(CLsls,tol);  % pole/zero cancellation in closed-loop responses
+pole(CLslsr)
+
+% pole/zero cancellation in controller
+Kslsr = minreal(Ksls,tol);
+CLslsr1  = feedback(G,Kslsr,+1);
+pole(CLslsr1)
+
+
+% iop
+CLiop  = feedback(G,Kiop,+1);
+% pole(CLiop)
+% tzero(CLiop)
+tol = 1e-6;
+CLiopr = minreal(CLiop,tol);
+pole(CLiopr)
+
+Kiopr = minreal(Kiop,tol);
+CLiopr1  = feedback(G,Kiopr,+1);
+pole(CLiopr1)
+
+
+
+
