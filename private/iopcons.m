@@ -1,4 +1,4 @@
-function Constraints = iopcons(G,CYv,CUv,CWv,CZv,N,z)
+function Constraints = iopcons(G,CYv,CUv,CWv,CZv,N,z,opts)
 % encoding achivability constraint
 
     [p,m] = size(G);      % system dimension
@@ -47,39 +47,43 @@ function Constraints = iopcons(G,CYv,CUv,CWv,CZv,N,z)
         end
     end
 
-    for(i=1:p)       %ach2
-        for(j=1:m)
-            fprintf(' ach2:  Percentage %6.4f \n', 100*(m*(i-1)+j)/m/p );
-            [num,~] = numden(ach2(i,j));
-            cc      = coeffs(num,z);
-            [A_eq,b_eq] = equationsToMatrix(cc,[vec(CWs);vec(CZs)]);
-            A_eqs       = double(A_eq);
-            b_eqs       = double(b_eq);
-            Constraints = [Constraints, A_eqs*[vec(CWv);vec(CZv)]== b_eqs];
+    if opts.stable == 0
+        % these achivability constraints only need to be imposed for
+        % unstable open-loop systems
+        for i = 1:p       %ach2
+            for j = 1:m
+                fprintf(' ach2:  Percentage %6.4f \n', 100*(m*(i-1)+j)/m/p );
+                [num,~] = numden(ach2(i,j));
+                cc      = coeffs(num,z);
+                [A_eq,b_eq] = equationsToMatrix(cc,[vec(CWs);vec(CZs)]);
+                A_eqs       = double(A_eq);
+                b_eqs       = double(b_eq);
+                Constraints = [Constraints, A_eqs*[vec(CWv);vec(CZv)]== b_eqs];
+            end
         end
-    end
-    
-    for(i=1:p)       %ach3
-        for(j=1:m)
-            fprintf(' ach3:  Percentage %6.4f \n', 100*(m*(i-1)+j)/m/p );
-            [num,~]=numden(ach3(i,j));
-            cc=coeffs(num,z);
-            [A_eq,b_eq]    = equationsToMatrix(cc,[vec(CYs);vec(CWs)]);
-            A_eqs   = double(A_eq);
-            b_eqs    = double(b_eq);
-            Constraints = [Constraints, A_eqs*[vec(CYv);vec(CWv)]== b_eqs];
+
+        for(i=1:p)       %ach3
+            for(j=1:m)
+                fprintf(' ach3:  Percentage %6.4f \n', 100*(m*(i-1)+j)/m/p );
+                [num,~]=numden(ach3(i,j));
+                cc=coeffs(num,z);
+                [A_eq,b_eq]    = equationsToMatrix(cc,[vec(CYs);vec(CWs)]);
+                A_eqs   = double(A_eq);
+                b_eqs    = double(b_eq);
+                Constraints = [Constraints, A_eqs*[vec(CYv);vec(CWv)]== b_eqs];
+            end
         end
-    end
-    
-    for(i=1:m)       %ach4
-        for(j=1:m)
-            fprintf(' ach4:  Percentage %6.4f \n', 100*(m*(i-1)+j)/m/m );
-            [num,~]=numden(ach4(i,j));
-            cc=coeffs(num,z);
-            [A_eq,b_eq]    = equationsToMatrix(cc,[vec(CUs);vec(CZs)]);
-            A_eqs   = double(A_eq);
-            b_eqs    = double(b_eq);
-            Constraints = [Constraints, A_eqs*[vec(CUv);vec(CZv)]== b_eqs];
+
+        for(i=1:m)       %ach4
+            for(j=1:m)
+                fprintf(' ach4:  Percentage %6.4f \n', 100*(m*(i-1)+j)/m/m );
+                [num,~]=numden(ach4(i,j));
+                cc=coeffs(num,z);
+                [A_eq,b_eq]    = equationsToMatrix(cc,[vec(CUs);vec(CZs)]);
+                A_eqs   = double(A_eq);
+                b_eqs    = double(b_eq);
+                Constraints = [Constraints, A_eqs*[vec(CUv);vec(CZv)]== b_eqs];
+            end
         end
     end
 end

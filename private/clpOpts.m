@@ -5,6 +5,7 @@ function options = clpOpts
     options.S       = [];   % no controller structure
     options.T       = [];
     options.R       = [];
+    options.stable  = 0;    % open-loop stable or not (0/1)
     options.gamma   = [];   % no robust stability constraint
     options.solver  = 'mosek';
     options.bisec   = 0;    % no golden section iteration

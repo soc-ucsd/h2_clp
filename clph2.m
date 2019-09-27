@@ -66,6 +66,10 @@ n  = size(A,1);
 G  = C*(z*eye(n)- A)^(-1)*B;  % symbolic form
 [p,m] = size(G);      % system dimension
 
+if max(abs(eig(A))) < 1  % open-loop stable systems
+    opts.stable = 1;
+end
+
 % ========================================================================
 %           Controller design using IOP
 % ========================================================================
@@ -120,7 +124,7 @@ switch Type
         
         % achivability constraint (1)-(3)
         fprintf('Step %d: Encoding the achievability constraints ...\n',Step)
-        const = iopcons(G,CYv,CUv,CWv,CZv,N,z);
+        const = iopcons(G,CYv,CUv,CWv,CZv,N,z,opts);
         Step  = Step +1;
         if opts.spa == 1
             fprintf('Step %d: Encoding the sparsity constraints ...\n',Step)
@@ -131,7 +135,11 @@ switch Type
         
         % H2 cost
         fprintf('Step %d: Encoding the H2 cost ...\n',Step)
-        cost   = iopcost(CYv,CUv,Q,R,N);
+        if opts.stable == 1
+            cost = 0;
+        else
+            cost   = iopcost(CYv,CUv,Q,R,N);
+        end
         Step  = Step +1;
         
     case 3  % mix of SLS/IOP
