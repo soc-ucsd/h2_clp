@@ -23,10 +23,14 @@ R = eye(m);
 
 A   = randi([-15,15],n,n)/5; B2  = randi([-2,2],n,m);
 C2  = randi([-2,2],p,n);  
+A
+B2
+C2
+eig(A)
 
 % create an uncontrollable and unobserable stable mode
-n = n + 1;
-A = blkdiag(rand(1),A);B2 = [zeros(1,m);B2]; C2  = [zeros(p,1),C2];  
+% n = n + 1;
+% A = blkdiag(rand(1),A);B2 = [zeros(1,m);B2]; C2  = [zeros(p,1),C2];  
 
 [n,rank(ctrb(A,B2)),rank(obsv(A,C2))]
 
@@ -51,7 +55,7 @@ P = ss(A,B,C,D,[]);  % discrete time model -- transfer matrices
 [K,CL,gamma,info] = h2syn(P,p,m);
 
 %% IOP
-opts.N       = 8;
+opts.N       = 4;
 opts.type    = 2;
 opts.solver  = 'mosek';
 [Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts);
@@ -61,3 +65,23 @@ opts.type    = 1;
 [Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
 
 [gamma,H2iop,H2sls]
+
+%% Closed-loop systems
+ G = ss(A,B2,C2,[],[]);
+% CLiop = closedloop(G,Kiop);
+% pole(CLiop)
+% tzero(CLiop)
+
+Kiopr  = minreal(Kiop);
+CLiopr = closedloop(G,Kiopr);
+pole(CLiopr)
+tzero(CLiopr)    % transimission zeros are always the same as the eigenvalues of A
+eig(A)
+
+Kslsr  = minreal(Ksls);
+CLslsr = closedloop(G,Kslsr);
+pole(CLslsr)
+
+
+
+
