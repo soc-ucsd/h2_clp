@@ -12,7 +12,7 @@ The orginal problem is as follows
                   subject to     K internally stabilizes G
                                  K \in S
                                  
-where Y, U denote the closed-loop transfer matrices from w to y and u, respectively, S is a binary matrix that encode the controller structure.
+where Y, U denote the closed-loop transfer matrices from w to y and u, respectively, S is a binary matrix that encodes the controller structure.
 
  We solve the problem using closed-loop parameterizations, one of them is as follows
 
@@ -44,5 +44,5 @@ Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/Se
       S:      Sparsity pattern for the controller  (default: [])
       
 ## Related paper
-Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the closed-loop parameterization of stabilizing controllers, in final preparation.
+Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the parameterization of stabilizing controllers using closed-loop responses, in final preparation.
 
