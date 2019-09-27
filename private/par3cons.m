@@ -15,10 +15,10 @@ function Constraints = par3cons(G,YXv,YYv,UXv,UYv,N,z,A,C)
     UX = zeros(m,n);
     UY = zeros(m,p);
     for t = 1:N+1
-        YX = YX + YXs(:,[(t-1)*p+1:t*n])/z^(t-1);
+        YX = YX + YXs(:,[(t-1)*n+1:t*n])/z^(t-1);
         YY = YY + YYs(:,[(t-1)*p+1:t*p])/z^(t-1);
-        UX = UX + UXs(:,[(t-1)*m+1:t*n])/z^(t-1);
-        UY = UY + UYs(:,[(t-1)*m+1:t*p])/z^(t-1);
+        UX = UX + UXs(:,[(t-1)*n+1:t*n])/z^(t-1);
+        UY = UY + UYs(:,[(t-1)*p+1:t*p])/z^(t-1);
     end
 
 
@@ -39,7 +39,7 @@ function Constraints = par3cons(G,YXv,YYv,UXv,UYv,N,z,A,C)
     for i=1:p      %ach1
         for j=1:n
             
-            fprintf(' ach1:  Percentage %6.4f \n', 100*(p*(i-1)+j)/p/n );
+            fprintf(' ach1:  Percentage %6.4f \n', 100*(n*(i-1)+j)/p/n );
             [num,~] = numden(ach1(i,j));
             cc      = coeffs(num,z);
             [A_eq,b_eq]    = equationsToMatrix(cc,[vec(YXs);vec(UXs)]);
@@ -63,7 +63,7 @@ function Constraints = par3cons(G,YXv,YYv,UXv,UYv,N,z,A,C)
     
     for(i=1:p)       %ach3
         for(j=1:n)
-            fprintf(' ach3:  Percentage %6.4f \n', 100*(p*(i-1)+j)/n/p );
+            fprintf(' ach3:  Percentage %6.4f \n', 100*(n*(i-1)+j)/n/p );
             [num,~]=numden(ach3(i,j));
             cc=coeffs(num,z);
             [A_eq,b_eq]    = equationsToMatrix(cc,[vec(YXs);vec(YYs)]);

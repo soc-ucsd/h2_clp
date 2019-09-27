@@ -134,7 +134,7 @@ switch Type
         cost   = iopcost(CYv,CUv,Q,R,N);
         Step  = Step +1;
         
-    case 3
+    case 3  % mix of SLS/IOP
         YXv = sdpvar(p,n*(N+1));          % decision variables for Y
         YYv = sdpvar(p,p*(N+1));          % decision variables for U
         UXv = sdpvar(m,n*(N+1));          % decision variables for W
@@ -155,7 +155,7 @@ switch Type
         cost   = par3cost(YYv,UYv,Q,R,N);
         Step   = Step +1;
         
-    case 4
+    case 4 % mix of SLS/IOP
         XYv = sdpvar(n,p*(N+1));          % decision variables for Y
         XUv = sdpvar(n,m*(N+1));          % decision variables for U
         UYv = sdpvar(m,p*(N+1));          % decision variables for W
@@ -174,7 +174,8 @@ switch Type
         
         % H2 cost
         fprintf('Step %d: Encoding the H2 cost ...\n',Step)
-        cost  = par4cost(XYv,UYv,Q,R,N,C,n);
+        %cost  = par4cost(XYv,UYv,Q,R,N,C,n);
+        cost  = slscost(XYv,UYv,Q,R,C,N);
         Step  = Step +1;
         
     otherwise
