@@ -19,10 +19,10 @@ r = p;  % number of disturbances
 Q = eye(p);
 R = eye(m);
 
-tau    = 5;    % tau in the dynamics
+tau    = 0.5;    % tau in the dynamics
 deltaT = 0.1;    % discrete time interval
 
-A   = eye(n) + 10*[0 1 0;
+A   = eye(n) + [0 1 0;
                 0 0 1;
                 0 0 -1/tau]*deltaT; 
 B2  = [0;0;1/tau]*deltaT;   
@@ -47,11 +47,11 @@ D = [D11 D12;
 P = ss(A,B,C,D,deltaT);  % discrete time model -- transfer matrices
 
 %% standard H2 control
-%[K,CL,gamma,info] = h2syn(P,p,m);
+[K,CL,gamma,info] = h2syn(P,p,m);
 
 %% H2 synthesis via Closed-loop parameterization
 
-N = 1 :1:10;
+N = 10:10:50;
 %N = [N,75,100];
 
 H2optimal = zeros(length(N),4);
@@ -59,8 +59,8 @@ H2optimal = zeros(length(N),4);
 for k = 1:length(N)
 
     opts.N       = N(k);
-    opts.solver  = 'sedumi';
-    % SLS
+    opts.solver  = 'mosek';
+%    SLS
     opts.type    = 1;
     [Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
 
@@ -68,11 +68,16 @@ for k = 1:length(N)
     opts.type    = 2;
     [Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts);
     
-    % Type 3 -- to do
+    % Type 3 -- mixed sls/iop
+    opts.type    = 3;
+    [Kty3,H2ty3,info3] = clph2(A,B2,C2,Q,R,opts);
     
-    % Type 4 -- to do
+    % Type 4 -- mixed sls/iop
+    opts.type    = 4;
+    [Kty4,H2ty4,info4] = clph2(A,B2,C2,Q,R,opts);
     
-    H2optimal(k,1:2) = [H2iop,H2sls];
+    H2optimal(k,:) = [H2iop, H2sls, H2ty3, H2ty4];
+   %  H2optimal(k,:) = [0, 0, 0, H2ty4];
 
 end
 
