@@ -21,8 +21,8 @@ r = p;  % number of disturbances
 Q = eye(p);
 R = eye(m);
 
-A   = randi([-15,15],n,n)/5; B2  = randi([-2,2],n,m);
-C2  = randi([-2,2],p,n);  
+A   = randi([-10,10],n,n);  B2  = randi([-5,5],n,m); %(rand(n,n)-rand(n,n));
+C2  = randi([-5,5],p,n);  
 
 % create an uncontrollable and unobserable stable mode
 %n = n + 1;
@@ -47,24 +47,29 @@ D = [D11 D12;
 
 P = ss(A,B,C,D,[]);  % discrete time model -- transfer matrices
 
+
 %% standard H2 control
 %[K,CL,gamma,info] = h2syn(P,p,m);
 
-%% IOP
+
+
+
+%% SLS
 opts.N       = 8;
+
+opts.type    = 1;
+[Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
+
+%% IOP
 opts.type    = 2;
 opts.solver  = 'mosek';
 [Kiop,H2iop,infoiop] = clph2(A,B2,C2,Q,R,opts);
 
-%% SLS
-opts.type    = 1;
-[Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
-
-[H2iop,H2sls]
+%[H2iop,H2sls]
 
 %% Test stability of SLS/IOP
 %fprintf('The eigenvalues of Acl with Ksls are:\n')
-%eig([A+B2*Ksls.D*C2 B2*Ksls.C;Ksls.B*C2 Ksls.A])
+%eig([A+B2*Kslsr.D*C2 B2*Kslsr.C;Kslsr.B*C2 Kslsr.A])
 %fprintf('The eigenvalues of Acl with Kiop are:\n')
 %eig([A+B2*Kiop.D*C2 B2*Kiop.C;Kiop.B*C2 Kiop.A])
 
@@ -74,27 +79,29 @@ G      = ss(A,B2,C2,[],[]);
 CLsls  = feedback(G,Ksls,+1);
 % pole(CLsls)
 % tzero(CLsls)
-tol = 1e-6;
+tol = 1e-14;
 CLslsr = minreal(CLsls,tol);  % pole/zero cancellation in closed-loop responses
 pole(CLslsr)
 
 % pole/zero cancellation in controller
-Kslsr = minreal(Ksls,tol);
-CLslsr1  = feedback(G,Kslsr,+1);
-pole(CLslsr1)
+%Kslsr = minreal(Ksls,tol);
+%CLslsr1  = feedback(G,Kslsr,+1);
+%pole(CLslsr1)
+
 
 
 % iop
 CLiop  = feedback(G,Kiop,+1);
 % pole(CLiop)
 % tzero(CLiop)
-tol = 1e-6;
+%tol = 1e-11;
 CLiopr = minreal(CLiop,tol);
 pole(CLiopr)
 
-Kiopr = minreal(Kiop,tol);
-CLiopr1  = feedback(G,Kiopr,+1);
-pole(CLiopr1)
+%Kiopr = minreal(Kiop,tol);
+%CLiopr1  = feedback(G,Kiopr,+1);
+%pole(CLiopr1)
+
 
 
 
