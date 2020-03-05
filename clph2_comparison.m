@@ -72,6 +72,8 @@ opts.type    = 1;
 % pole(CLiop)
 % tzero(CLiop)
 
+%  minreal(infoiop.cl.U*(infoiop.cl.Y)^(-1))
+
 Kiopr  = minreal(Kiop);
 CLiopr = closedloop(G,Kiopr);
 pole(CLiopr)

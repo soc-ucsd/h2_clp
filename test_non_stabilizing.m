@@ -21,7 +21,7 @@ r = p;  % number of disturbances
 Q = eye(p);
 R = eye(m);
 
-A   = randi([-10,10],n,n);  B2  = randi([-5,5],n,m); %(rand(n,n)-rand(n,n));
+A   = randi([-30,30],n,n)/pi;  B2  = randi([-5,5],n,m); %(rand(n,n)-rand(n,n));
 C2  = randi([-5,5],p,n);  
 
 % create an uncontrollable and unobserable stable mode
@@ -84,9 +84,9 @@ CLslsr = minreal(CLsls,tol);  % pole/zero cancellation in closed-loop responses
 pole(CLslsr)
 
 % pole/zero cancellation in controller
-%Kslsr = minreal(Ksls,tol);
-%CLslsr1  = feedback(G,Kslsr,+1);
-%pole(CLslsr1)
+Kslsr = minreal(Ksls,tol);
+CLslsr1  = feedback(G,Kslsr,+1);
+pole(CLslsr1)
 
 
 
