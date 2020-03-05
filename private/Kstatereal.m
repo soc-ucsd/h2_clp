@@ -4,7 +4,8 @@ function K = Kstatereal(U,Y,T)
 %       U,Y: FIR factor
 %       T  : FIR length
 %
-
+% this realization is not minimal
+% 
 % Check again -- the following realization works now
 
 % U \in R^(m,p*(N+1))
@@ -17,7 +18,7 @@ p      = p1/(T+1);
 hatU = U(:,p+1:end);
 U0   = U(:,1:p);
 hatY = Y(:,p+1:end);
-Y0   = Y(:,1:p);              % this should be identity from IOP
+Y0   = Y(:,1:p);               % this should be identity from IOP
 
 hatI          = zeros(T*p,p);
 hatI(1:p,1:p) = eye(p);
