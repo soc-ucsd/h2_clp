@@ -13,7 +13,7 @@ function [K,H2,info] = clph2(A,B,C,Q,R,userOpts)
 %      spa:    Distributed control Yes/No   (default: 0)
 %      S:      Sparsity pattern for the controller  (default: [])
 
-% The plant dynamics are:
+% The plant dynamics are: (can be modified, YZ 2020/03/06)
 %                           x = Ax_t + Bu_t
 %                           y = Cx_t + w_t
 % The orginal problem is as follows
@@ -110,7 +110,7 @@ switch Type
         
         % H2 cost
         fprintf('Step %d: Encoding the H2 cost ...\n',Step)
-        cost   = slscost(CNv,CLv,Q,R,C,N);
+        cost  = slscost(CRv,CMv,CNv,CLv,Q,R,B,C,N,opts);
         Step  = Step +1;
         
     case 2    % iop
@@ -133,12 +133,8 @@ switch Type
         
         % H2 cost
         fprintf('Step %d: Encoding the H2 cost ...\n',Step)
-        if opts.stable == 1
-            cost = 0;
-        else
-            cost   = iopcost(CYv,CUv,Q,R,N);
-        end
-        Step  = Step +1;
+        cost = iopcost(CYv,CUv,CWv,CZv,Q,R,N,opts);
+        Step = Step +1;
         
     case 3  % mix of SLS/IOP
         YXv = sdpvar(p,n*(N+1));          % decision variables for Y

@@ -12,4 +12,7 @@ function options = clpOpts
     options.verbose = 1;    % display solver information
     options.polish  = 0;    % remove tiny numbers in controller
     options.eps     = 8;    % rounding precision 1e-8;
+    
+    options.costType = 1;   % which cost function is used
+
 end

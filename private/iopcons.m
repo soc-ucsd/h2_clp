@@ -47,7 +47,7 @@ function Constraints = iopcons(G,CYv,CUv,CWv,CZv,N,z,opts)
         end
     end
 
-    if opts.stable == 0
+    if opts.stable == 0 || opts.costType == 2
         % these achivability constraints only need to be imposed for
         % unstable open-loop systems
         for i = 1:p       %ach2
