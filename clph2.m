@@ -188,6 +188,9 @@ end
 % Get a solution
 fprintf('Step %d: call a solver to get a solution...\n\n',Step);
 yalmipOpts = sdpsettings('solver',opts.solver,'verbose',opts.verbose);
+if strcmp(opts.solver,'sedumi')
+    yalmipOpts = sdpsettings(yalmipOpts,'sedumi.eps',opts.eps);
+end
 sol        = optimize(const,cost,yalmipOpts);
 
 
