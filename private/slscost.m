@@ -25,7 +25,9 @@ function cost = slscost(CRv,CMv,CNv,CLv,Q,R,B,C,T,opts)
                     trace(CLv(:,(t-1)*m+1:t*m)'*R*CLv(:,(t-1)*m+1:t*m)) + ...
                     trace((B'*CRv(:,(t-1)*n+1:t*n)')*Qc*(CRv(:,(t-1)*n+1:t*n)*B)) + ...
                     trace(B'*CMv(:,(t-1)*n+1:t*n)'*R*CMv(:,(t-1)*n+1:t*n)*B);
-        end       
-        
+        end    
+    elseif opts.costType == 3
+        cost = 0;
     end
+        
 end
