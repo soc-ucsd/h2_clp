@@ -9,33 +9,47 @@ clear yalmip
 % y[t]   = C2x[t] + D21w[t] + D22 u[t]
 
 % n = 5; m = 2; p = 2;
-
-n = 6;  % number of states
-p = 4;  % number of outputs
-m = 4;  % number of inputs
+Num = 1;
+    
+while true
+    
+    
+n = 3;  % number of states
+p = 1;  % number of outputs
+m = 1;  % number of inputs
 r = p;  % number of disturbances
 %q = 2*p;  % number of performance signals
 
 Q = eye(p);
 R = eye(m);
 
-A   = randi([-5,5],n,n); B2  = randi([-10,10],n,m)/10;
-C2  = randi([-10,10],p,n)/10;  
+A   = randi([-5,5],n,n); B2  = randi([-1,1],n,m);
+C2  = randi([-1,1],p,n);  
 
-eig(A)
+%eig(A)
 
 %% SLS
 
-%load data_truefailure4
 
 opts.type    = 1;
-opts.solver = 'sedumi';
-%opts.solver = 'mosek';
-opts.costType = 3;    % no penalty on the cost
-opts.eps = 1e-3;      % low solution precision, try 1e-3, this one can lead to unstable controller
-                      % 1e-4, 1e-6
+%opts.solver = 'sedumi';
+opts.solver = 'mosek';
+opts.costType = 2;    % 2: penalty for all Y U W Z; 3: no penalty on the cost
+
 opts.N   = 10;
 [Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
+G = ss(A,B2,C2,[],[]);
+CL = closedloop(G,Ksls);
+
+fprintf('Number of trials       : %i\n',Num);
+fprintf('Maximum eigenvalue     : %4.2f\n',max(abs(eig(CL.A))));
+
+if infosls.problem == 0 && max(abs(eig(CL.A))) > 1  % test sedumi
+    break;
+end
+Num = Num + 1;
+
+end
 
 %% Simulation --
 if infosls.problem == 0 % only do time-domain simulation when the solver reports no numerical errors
