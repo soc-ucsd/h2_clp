@@ -3,16 +3,17 @@
 ## Problem description
 The plant dynamics are:
  
-                           x = Ax_t + Bu_t
+                           x = Ax_t + B(u_t + v_t)
                            y = Cx_t + w_t
                            
 The orginal problem is as follows
  
                       min_{K}    ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
+                                      + ||Q^{1/2}W||^2 + ||R^{1/2}Z||^2
                   subject to     K internally stabilizes G
                                  K \in S
                                  
-where Y, U denote the closed-loop transfer matrices from w to y and u, respectively, S is a binary matrix that encodes the controller structure.
+where Y, U denote the closed-loop transfer matrices from w to y and u, and W, Z, denote the closed-loop transfer matrices from v to y and u, S is a binary matrix that encodes the controller structure.
 
  We solve the problem using closed-loop parameterizations, one of them is as follows
 
@@ -44,5 +45,5 @@ Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/Se
       S:      Sparsity pattern for the controller  (default: [])
       
 ## Related paper
-Y. Zheng, L. Fuerier, M. Kamgarpour, N Li. On the parameterization of stabilizing controllers using closed-loop responses, in final preparation.
+Zheng, Y., Furieri, L., Kamgarpour, M., & Li, N. (2019). On the Parameterization of Stabilizing Controllers using Closed-loop Responses. arXiv preprint arXiv:1909.12346.
 
