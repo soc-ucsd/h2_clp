@@ -13,15 +13,15 @@ nk = size(K.A,1); % controller state dimension
 
 Tn = floor(T/deltaT);   % number of iterations
 
-x = zeros(nx,Tn);
-y = zeros(ny,Tn);
-u = zeros(nu,Tn);
-kesi = zeros(nk,Tn);
+x = zeros(nx,Tn+1);
+y = zeros(ny,Tn+1);
+u = zeros(nu,Tn+1);
+kesi = zeros(nk,Tn+1);
 
 x(:,1)    = x0;           % system initial state
 kesi(:,1) = zeros(nk,1);  % controller initial state
 
-for i = 1:Tn-1
+for i = 1:Tn
     
     % measurement 
     y(:,i)      = C*x(:,i) + dy(:,i);

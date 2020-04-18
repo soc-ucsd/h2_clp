@@ -14,9 +14,9 @@ Num = 1;
 while true
     
     
-n = 3;  % number of states
-p = 1;  % number of outputs
-m = 1;  % number of inputs
+n = 10;  % number of states
+p = 2;  % number of outputs
+m = 2;  % number of inputs
 r = p;  % number of disturbances
 %q = 2*p;  % number of performance signals
 
@@ -26,6 +26,8 @@ R = eye(m);
 A   = randi([-5,5],n,n); B2  = randi([-1,1],n,m);
 C2  = randi([-1,1],p,n);  
 
+A   = A/max(abs(eig(A)))/1.01;   % stable systems
+
 %eig(A)
 
 %% SLS
@@ -34,18 +36,21 @@ C2  = randi([-1,1],p,n);
 opts.type    = 1;
 %opts.solver = 'sedumi';
 opts.solver = 'mosek';
-opts.costType = 2;    % 2: penalty for all Y U W Z; 3: no penalty on the cost
+opts.costType = 3;    % 2: penalty for all Y U W Z; 3: no penalty on the cost
 
-opts.N   = 10;
+opts.N   = 50;
 [Ksls,H2sls,infosls] = clph2(A,B2,C2,Q,R,opts);
 G = ss(A,B2,C2,[],[]);
-CL = closedloop(G,Ksls);
+if infosls.problem == 0
+    CL = closedloop(G,Ksls);
 
-fprintf('Number of trials       : %i\n',Num);
-fprintf('Maximum eigenvalue     : %4.2f\n',max(abs(eig(CL.A))));
+    fprintf('Number of trials       : %i\n',Num);
+    fprintf('Maximum eigenvalue     : %4.2f\n',max(abs(eig(CL.A))));
 
-if infosls.problem == 0 && max(abs(eig(CL.A))) > 1  % test sedumi
-    break;
+    if  max(abs(eig(CL.A))) > 1  % test sedumi
+        fprintf('Hinf norm of R         : %i\n',norm(infosls.cl.R,'inf'));
+        break;
+    end
 end
 Num = Num + 1;
 

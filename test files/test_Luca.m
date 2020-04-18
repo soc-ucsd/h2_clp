@@ -4,13 +4,10 @@ clc;
 z = tf('z');
 
 n = 3;
-T = 3;
+T = 2;
 I = eye(3);
 
 %% We need a nihilpotent A to satisfy the constraint M,N in z^-1RH_inf, L in RH_inf
-A = [0 0 0;
-    randi([-20,20]) 0 0;
-    randi([-20,20]) randi([-20,20]) 0]
 B= eye(3)
 C=eye(3)
 
@@ -23,6 +20,12 @@ found = 0;
 
 
 while(found == 0)
+    
+    A = [0 0 0;
+    randi([-20,20]) 0 0;
+    randi([-20,20]) randi([-20,20]) 0]
+
+    
     R_tilde = tf(ones(n,n));
     Delta1 = tf(ones(n,n));
     Delta3 = tf(ones(n,n));

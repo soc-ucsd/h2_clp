@@ -158,7 +158,7 @@ switch Type
         end        
         % H2 cost
         fprintf('Step %d: Encoding the H2 cost ...\n',Step)
-        cost   = par3cost(YYv,UYv,UXv,YXv,Q,R,N,B,opts);
+        cost   = par3cost(YYv,UYv,UXv,UXv,Q,R,N);
         Step   = Step +1;
         
     case 4 % mix of SLS/IOP
@@ -180,7 +180,8 @@ switch Type
         
         % H2 cost
         fprintf('Step %d: Encoding the H2 cost ...\n',Step)
-        cost  = par4cost(XYv,UYv,XUv,UUv,Q,R,N,C,opts);
+        cost  = par4cost(XYv,UYv,Q,R,N,C,n);
+        %cost  = slscost(XYv,UYv,Q,R,C,N);
         Step  = Step +1;
         
     otherwise

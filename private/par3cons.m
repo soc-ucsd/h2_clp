@@ -24,13 +24,10 @@ function Constraints = par3cons(G,YXv,YYv,UXv,UYv,N,z,A,C)
 
     %%%achievability constraints
     ach1 = YX - G*UX - C*inv(z*eye(n)-A);
-
-    
     ach2 = YY - G*UY-eye(p);
 
     
     ach3 = YX*(z*eye(n)-A)-YY*C;  %% CAN BE OPTIMIZED similar to sls 
-
     ach4 = UX*(z*eye(n)-A)-UY*C; %% CAN BE OPTIMIZED similar to sls
     
     

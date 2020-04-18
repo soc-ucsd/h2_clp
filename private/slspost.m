@@ -10,8 +10,7 @@ function [info,K] = slspost(CRv,CMv,CNv,CLv,C,N,m,n,p,info)
     temp(:,1:p) = temp(1:p) + eye(p);
     K1 = Kstatereal(info.var.L,temp,N);  % state space realizaiton K = L(CN+I)^(-1)
     
-    K = Kslsreal(info.var.L,info.var.M,info.var.R,info.var.N,N);     % state space realizaiton K = L - MR^{-1}N
-    
+    K = Kslsreal(info.var.L,info.var.M,info.var.R,info.var.N,N);     % state space realizaiton K = L - MR^{-1}N 
 
     %  closed-loop responses from optimization
     z = tf('z');
@@ -29,5 +28,7 @@ function [info,K] = slspost(CRv,CMv,CNv,CLv,C,N,m,n,p,info)
 
     info.K1 = K1;
     info.K = K;
+    
+    
 end
 

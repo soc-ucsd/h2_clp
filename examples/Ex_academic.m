@@ -42,7 +42,7 @@ P = ss(A,B,C,D,dT);  % discrete time model -- transfer matrices
 
 
 %% Closed-loop optimization
-opts.N  = 15;
+opts.N  = 5;
 opts.solver  = 'mosek';
 %    SLS
 opts.type    = 1;
@@ -55,7 +55,7 @@ opts.type    = 2;
 %% time-domain simulaiton
 close all
 
-eps = 10^(-6);
+eps = 10^(-8);
 Kiopr = minreal(Kiop,eps);
 Kslsr = minreal(Ksls,eps);
 
