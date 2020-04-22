@@ -48,9 +48,9 @@ R = 1*eye(m);
 
 B1  = [Bd zeros(n,p)]; B2 = Bd;
 D21 = [zeros(p,m) eye(p)]; D22 = zeros(p,m);
-C1  = [Q^(0.5)*Cd;
-       zeros(m,n)];
 C2  = Cd;
+C1  = [Q^(0.5)*C2;
+       zeros(m,n)];
 D11 = [Q^(0.5)*D21;
        zeros(m,p+m)];
 D12 = [zeros(p,m);
@@ -63,6 +63,11 @@ Dg = [D11 D12;
 
 P = ss(Ad,Bg,Cg,Dg,dt);            % discrete time model -- transfer matrices
 [K,CL,gamma,info] = h2syn(P,p,m);  % this norm is not consistent with the results from CLP. 
+
+G = ss(Ad,Bd,Cd,[],dt);
+sqrt(norm((eye(2)-G*K)^(-1),2)^2 + norm((eye(2)-G*K)^(-1)*G,2)^2 + ...
+    norm(K*(eye(2)-G*K)^(-1),2)^2 + norm((eye(2)-K*G)^(-1),2)^2)    % this cost is consistent with our computation
+
 
 % %% H2 synthesis via Closed-loop parameterization
 % 
