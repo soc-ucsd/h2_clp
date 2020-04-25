@@ -1,5 +1,10 @@
 function SLPex
-% Counter Example
+% Counter Example in the paper:
+% Y. Zheng, L. Furieri, M. Kamgarpour, N, Li, Convex characterizations of
+% stabilizing controllers: System-level, Input-output parameterizations and
+% beyond
+%
+ 
 close all
 
 load('slsex1.mat')   % load data
@@ -119,19 +124,17 @@ du = zeros(n,Tn);
 x0 = rand(n,1);    % initial disturbance
 
 [x,~,~,~] = dynsim(G,Kstate,dT,dx,dy,du,T,x0);
-Time = 1:Tn;
+Time = 1:Tn+1;
 figure; 
 subplot(2,1,1); plot(Time,x(1,:)); xlabel('Iteration'); ylabel('x_1'); %title('IOP')
 subplot(2,1,2); plot(Time,x(2,:)); xlabel('Iteration'); ylabel('x_2');
 
 [x,~,~,~] = dynsim(G,K1,dT,dx,dy,du,T,x0);
-Time = 1:Tn;
 figure; 
 subplot(2,1,1); plot(Time,x(1,:)); xlabel('Iteration'); ylabel('x_1'); %title('IOP')
 subplot(2,1,2); plot(Time,x(2,:)); xlabel('Iteration'); ylabel('x_2');
 
 [x,~,~,~] = dynsim(G,K2,dT,dx,dy,du,T,x0);
-Time = 1:Tn;
 figure; 
 subplot(2,1,1); plot(Time,x(1,:)); xlabel('Iteration'); ylabel('x_1'); %title('IOP')
 subplot(2,1,2); plot(Time,x(2,:)); xlabel('Iteration'); ylabel('x_2');
