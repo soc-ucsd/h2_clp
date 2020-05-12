@@ -18,6 +18,7 @@ where Y, U denote the closed-loop transfer matrices from w to y and u, and W, Z,
  We solve the problem using closed-loop parameterizations, one of them is as follows
 
               min_{Y,U,W,Z}  ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
+                                + ||Q^{1/2}W||^2 + ||R^{1/2}Z||^2
                subjec to      [I -G][Y W]
                                     [U Z]  = [I 0]   (1)
                                  [Y W][-G] = [I]
