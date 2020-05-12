@@ -14,15 +14,15 @@ function [K,H2,info] = clph2(A,B,C,Q,R,userOpts)
 %      S:      Sparsity pattern for the controller  (default: [])
 
 % The plant dynamics are:
-%                           x = Ax_t + Bu_t
+%                           x = Ax_t + Bu_t + v_t
 %                           y = Cx_t + w_t
 % The orginal problem is as follows
 %                      min_{K}    ||Q^{1/2}Y||^2 + ||R^{1/2}U||^2
 %                                    + ||Q^{1/2}W||^2 + ||R^{1/2}Z||^2
 %                  subject to     K internally stabilizes G
 %                                 K \in S
-% where Y, U denote the closed-loop transfer matrices from w to y and u,
-% respectively.
+% where Y, U denote the closed-loop response from w to y and u, respectively; 
+%       W, Z denote the closed-loop response from v to y and u.
 %
 % We solve the problem using closed-loop parameterizations, and one of them is
 % as follows
@@ -141,10 +141,10 @@ switch Type
         Step = Step +1;
         
     case 3  % mix of SLS/IOP
-        YXv = sdpvar(p,n*(N+1));          % decision variables for Y
-        YYv = sdpvar(p,p*(N+1));          % decision variables for U
-        UXv = sdpvar(m,n*(N+1));          % decision variables for W
-        UYv = sdpvar(m,p*(N+1));          % decision variables for Z
+        YXv = sdpvar(p,n*(N+1));          % decision variables for \Phi_yx
+        YYv = sdpvar(p,p*(N+1));          % decision variables for \Phi_yy
+        UXv = sdpvar(m,n*(N+1));          % decision variables for \Phi_ux
+        UYv = sdpvar(m,p*(N+1));          % decision variables for \Phi_uy
         
         % achivability constraint (1)-(3)
         fprintf('Step %d: Encoding the achievability constraints ...\n',Step)
@@ -162,10 +162,10 @@ switch Type
         Step   = Step +1;
         
     case 4 % mix of SLS/IOP
-        XYv = sdpvar(n,p*(N+1));          % decision variables for Y
-        XUv = sdpvar(n,m*(N+1));          % decision variables for U
-        UYv = sdpvar(m,p*(N+1));          % decision variables for W
-        UUv = sdpvar(m,m*(N+1));          % decision variables for Z
+        XYv = sdpvar(n,p*(N+1));          % decision variables for \Phi_xy
+        XUv = sdpvar(n,m*(N+1));          % decision variables for \Phi_xu
+        UYv = sdpvar(m,p*(N+1));          % decision variables for \Phi_uy
+        UUv = sdpvar(m,m*(N+1));          % decision variables for \Phi_uu
         
         % achivability constraint (1)-(3)
         fprintf('Step %d: Encoding the achievability constraints ...\n',Step)
@@ -212,13 +212,11 @@ if sol.problem == 0
         case 1    % sls
             [info,K] = slspost(CRv,CMv,CNv,CLv,C,N,m,n,p,info); 
         case 2    % iop    
-           [info,K] = ioppost(CYv,CUv,CWv,CZv,N,m,p,info);  
+            [info,K] = ioppost(CYv,CUv,CWv,CZv,N,m,p,info);  
         case 3
-            disp('to do')
-            K=0;  
+            [info,K] = mixIpost(YXv,YYv,UXv,UYv,N,m,p,info);  
         case 4
-            disp('to do')
-            K=0;  
+            [info,K] = mixIIpost(XYv,UYv,XUv,UUv,N,m,p,info);
         otherwise
             error('Unknown parameterizaiton')
     end
