@@ -1,7 +1,5 @@
 function clph2Install
-
 % add clph2 into the MATLAB search path
-
 
 here = pwd;
 addpath(here);

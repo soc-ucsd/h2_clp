@@ -34,9 +34,9 @@ Ad = eye(4)+A*dt; Bd = B*dt; Cd = C;
 %               Mixed traffic control example: Design a controller
 % ---------------------------------------------------------------------------- %
 % H2 synthesis via Closed-loop parameterization
-n = 4;  % number of states
-p = 2;  % number of outputs
-m = 2;  % number of inputs
+n = 4;          % number of states
+p = 2;          % number of outputs
+m = 2;          % number of inputs
 Q = 1*eye(p);   % performance weights
 R = 1*eye(m);
 
@@ -48,19 +48,19 @@ opts.verbose  = 0;
 
 % SLS
 opts.type    = 1;
-[Ksls,H2sls,infosls] = clph2(Ad,Bd,Cd,Q,R,opts);
+[Ksls,H2sls,~] = clph2(Ad,Bd,Cd,Q,R,opts);
 
 % IOP
 opts.type    = 2;
-[Kiop,H2iop,infoiop] = clph2(Ad,Bd,Cd,Q,R,opts);
+[Kiop,H2iop,~] = clph2(Ad,Bd,Cd,Q,R,opts);
     
 % Mixed I -- mixed sls/iop
 opts.type    = 3; 
-[Kty3,H2ty3,info3] = clph2(Ad,Bd,Cd,Q,R,opts);
+[KmixI,H2ty3,~] = clph2(Ad,Bd,Cd,Q,R,opts);
      
 % Mixed II -- mixed sls/iop 
 opts.type    = 4; 
-[Kty4,H2ty4,info4] = clph2(Ad,Bd,Cd,Q,R,opts);
+[KmixII,H2ty4,~] = clph2(Ad,Bd,Cd,Q,R,opts);
      
 H2optimal = [H2iop, H2sls, H2ty3, H2ty4];
 fprintf('\n\n The H2 norm of the closed-loop systems are: \n');
@@ -80,12 +80,12 @@ dy = zeros(p,Tn);
 du = zeros(m,Tn);
 x0 = [5;0;-2;0];  % initial disturbance
 G = ss(Ad,Bd,Cd,[],dt);
-Time = (1:Tn)*dt;
+Time = (0:Tn)*dt;
 
 % SLS
 [x,~,u,~] = dynsim(G,Ksls,dt,dx,dy,du,T,x0);
-figure; subplot(2,1,1); plot(Time,u(1,:)); xlabel('time (s)'); ylabel('Control input'); title('SLS')
-        subplot(2,1,2); plot(Time,u(2,:)); xlabel('time (s)'); ylabel('Control input');
+% figure; subplot(2,1,1); plot(Time,u(1,:)); xlabel('time (s)'); ylabel('Control input'); title('SLS')
+%         subplot(2,1,2); plot(Time,u(2,:)); xlabel('time (s)'); ylabel('Control input');
 figure; 
 subplot(4,1,1); plot(Time,x(1,:)); xlabel('time (s)'); ylabel('x_1');  title('SLS')
 subplot(4,1,2); plot(Time,x(2,:)); xlabel('time (s)'); ylabel('x_2');
@@ -94,13 +94,28 @@ subplot(4,1,4); plot(Time,x(4,:)); xlabel('time (s)'); ylabel('x_4');
    
 % IOP
 [x,~,u,~] = dynsim(G,Kiop,dt,dx,dy,du,T,x0);
-figure; subplot(2,1,1); plot(Time,u(1,:)); xlabel('time (s)'); ylabel('Control input'); title('IOP')
-        subplot(2,1,2); plot(Time,u(2,:)); xlabel('time (s)'); ylabel('Control input');
 figure; 
 subplot(4,1,1); plot(Time,x(1,:)); xlabel('time (s)'); ylabel('x_1');  title('IOP')
 subplot(4,1,2); plot(Time,x(2,:)); xlabel('time (s)'); ylabel('x_2');
 subplot(4,1,3); plot(Time,x(3,:)); xlabel('time (s)'); ylabel('x_3');
 subplot(4,1,4); plot(Time,x(4,:)); xlabel('time (s)'); ylabel('x_4');
+
+% Mix-I parameterization
+[x,~,u,~] = dynsim(G,KmixI,dt,dx,dy,du,T,x0);
+figure; 
+subplot(4,1,1); plot(Time,x(1,:)); xlabel('time (s)'); ylabel('x_1');  title('Mix I')
+subplot(4,1,2); plot(Time,x(2,:)); xlabel('time (s)'); ylabel('x_2');
+subplot(4,1,3); plot(Time,x(3,:)); xlabel('time (s)'); ylabel('x_3');
+subplot(4,1,4); plot(Time,x(4,:)); xlabel('time (s)'); ylabel('x_4');
+
+% Mix-II parameterization
+[x,~,u,~] = dynsim(G,KmixII,dt,dx,dy,du,T,x0);
+figure; 
+subplot(4,1,1); plot(Time,x(1,:)); xlabel('time (s)'); ylabel('x_1');  title('Mix II')
+subplot(4,1,2); plot(Time,x(2,:)); xlabel('time (s)'); ylabel('x_2');
+subplot(4,1,3); plot(Time,x(3,:)); xlabel('time (s)'); ylabel('x_3');
+subplot(4,1,4); plot(Time,x(4,:)); xlabel('time (s)'); ylabel('x_4');
+
 
 % ---------------------------------------------------------------------------- %
 %                                   END

@@ -69,100 +69,103 @@ sqrt(norm((eye(2)-G*K)^(-1),2)^2 + norm((eye(2)-G*K)^(-1)*G,2)^2 + ...
     norm(K*(eye(2)-G*K)^(-1),2)^2 + norm((eye(2)-K*G)^(-1),2)^2)    % this cost is consistent with our computation
 
 
-% %% H2 synthesis via Closed-loop parameterization
-% 
-% 
-% N = [10,15,20];%%[10,15, 20, 25, 30, 50, 75, 100];
-% 
-% H2optimal = zeros(length(N),4);
-% Ksls = cell(length(N),1);
-% Kiop = cell(length(N),1);
-% Kty3 = cell(length(N),1);
-% Kty4 = cell(length(N),1);
-% for k = 1:length(N)
-%     clear Yalmip
-%     
-%     opts.N        = N(k);
-%     opts.solver   = 'mosek';
-%     opts.costType = 1;
-%     
-%     opts.type    = 1;
-%     [Ksls{k},H2sls,infosls] = clph2(Ad,Bd,Cd,Q,R,opts);
-% 
-%     % IOP
-%     opts.type    = 2;
-%     [Kiop{k},H2iop,infoiop] = clph2(Ad,Bd,Cd,Q,R,opts);
-%     
-%     % Type 3 -- mixed sls/iop
-%      opts.type    = 3;
-%      [Kty3{k},H2ty3,info3] = clph2(Ad,Bd,Cd,Q,R,opts);
-%     
-%     % Type 4 -- mixed sls/iop
-%     opts.type    = 4;
-%     [Kty4{k},H2ty4,info4] = clph2(Ad,Bd,Cd,Q,R,opts);
-%     
-%     H2optimal(k,:) = [H2iop, H2sls, H2ty3, H2ty4];
-% end
+%% H2 synthesis via Closed-loop parameterization
 
-load Ex_mixedtraffic
 
-%% Time domain simulation
-    T = 10;
-    Tn = floor(T/dt);   % number of iterations
-    dx = zeros(n,Tn);
-    dy = zeros(p,Tn);
-    du = zeros(m,Tn);
-    %x0 = 5*rand(n,1);  % initial disturbance
-    x0 = [3,0,-2,0]';
-    G = ss(Ad,Bd,Cd,[],dt);
-    Time = (0:Tn)*dt;
+N = [10,15,20];%%[10,15, 20, 25, 30, 50, 75, 100];
 
-%% SLS
-    [x,y,u,kesi_sls] = dynsim(G,Ksls{6},dt,dx,dy,du,T,x0);    
-    figure; h1 = plot(Time,u(1,:),'b','linewidth',1.2); hold on
-            h2 = plot(Time,u(2,:),'m','linewidth',1.2); 
-            xlabel('Time (s)','Interpreter','latex','FontSize',10); 
-            ylabel('Control input','Interpreter','latex','FontSize',10);
-            h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
-            set(h,'FontSize',10,'Interpreter','latex','box','off')
-            set(gcf,'Position',[250 150 400 200]);
-    figure; 
-    subplot(2,1,1); h1 = plot(Time,x(1,:),'b','linewidth',1.2); hold on;
-                    h2 = plot(Time,x(3,:),'m','linewidth',1.2); 
-                    xlabel('Time (s)','Interpreter','latex','FontSize',10);
-                    ylabel('Spacing error (m)','Interpreter','latex','FontSize',10);
-                    h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
-                    set(h,'FontSize',10,'Interpreter','latex','box','off')
-    subplot(2,1,2); h1 = plot(Time,x(2,:),'b','linewidth',1.2); hold on
-                    h2 = plot(Time,x(4,:),'m','linewidth',1.2); 
-                    xlabel('Time (s)','Interpreter','latex','FontSize',10);
-                    ylabel('Velocity error (m/s)','Interpreter','latex','FontSize',10);
-                    h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
-                    set(h,'FontSize',10,'Interpreter','latex','box','off')
-    set(gcf,'Position',[250 150 400 350]);
-%print(gcf,['../../Figures/timeBlockArrow'],'-painters','-depsc2','-r600')
-
+H2optimal = zeros(length(N),4);
+Ksls = cell(length(N),1);
+Kiop = cell(length(N),1);
+Kty3 = cell(length(N),1);
+Kty4 = cell(length(N),1);
+for k = 1:length(N)
+    clear Yalmip
     
-%% IOP
-  [x,y,u,kesi] = dynsim(G,Kiop{6},dt,dx,dy,du,T,x0);
-    figure; h1 = plot(Time,u(1,:),'b','linewidth',1.2); hold on
-            h2 = plot(Time,u(2,:),'m','linewidth',1.2); 
-            xlabel('Time (s)','Interpreter','latex','FontSize',10); 
-            ylabel('Control input','Interpreter','latex','FontSize',10);
-            h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
-            set(h,'FontSize',10,'Interpreter','latex','box','off')
-            set(gcf,'Position',[250 150 400 200]);
-    figure; 
-    subplot(2,1,1); h1 = plot(Time,x(1,:),'b','linewidth',1.2); hold on;
-                    h2 = plot(Time,x(3,:),'m','linewidth',1.2); 
-                    xlabel('Time (s)','Interpreter','latex','FontSize',10);
-                    ylabel('Spacing error (m)','Interpreter','latex','FontSize',10);
-                    h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
-                    set(h,'FontSize',10,'Interpreter','latex','box','off')
-    subplot(2,1,2); h1 = plot(Time,x(2,:),'b','linewidth',1.2); hold on
-                    h2 = plot(Time,x(4,:),'m','linewidth',1.2); 
-                    xlabel('Time (s)','Interpreter','latex','FontSize',10);
-                    ylabel('Velocity error (m/s)','Interpreter','latex','FontSize',10);
-                    h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
-                    set(h,'FontSize',10,'Interpreter','latex','box','off')
-    set(gcf,'Position',[250 150 400 350]);
+    opts.N        = N(k);
+    opts.solver   = 'mosek';
+    opts.costType = 1;
+    
+    opts.type    = 1;
+    [Ksls{k},H2sls,infosls] = clph2(Ad,Bd,Cd,Q,R,opts);
+
+    % IOP
+    opts.type    = 2;
+    [Kiop{k},H2iop,infoiop] = clph2(Ad,Bd,Cd,Q,R,opts);
+    
+    % Type 3 -- mixed sls/iop
+     opts.type    = 3;
+     [Kty3{k},H2ty3,info3] = clph2(Ad,Bd,Cd,Q,R,opts);
+    
+    % Type 4 -- mixed sls/iop
+    opts.type    = 4;
+    [Kty4{k},H2ty4,info4] = clph2(Ad,Bd,Cd,Q,R,opts);
+    
+    H2optimal(k,:) = [H2iop, H2sls, H2ty3, H2ty4];
+end
+
+H2optimal
+
+% 
+% load Ex_mixedtraffic
+% 
+% %% Time domain simulation
+%     T = 10;
+%     Tn = floor(T/dt);   % number of iterations
+%     dx = zeros(n,Tn);
+%     dy = zeros(p,Tn);
+%     du = zeros(m,Tn);
+%     %x0 = 5*rand(n,1);  % initial disturbance
+%     x0 = [3,0,-2,0]';
+%     G = ss(Ad,Bd,Cd,[],dt);
+%     Time = (0:Tn)*dt;
+% 
+% %% SLS
+%     [x,y,u,kesi_sls] = dynsim(G,Ksls{6},dt,dx,dy,du,T,x0);    
+%     figure; h1 = plot(Time,u(1,:),'b','linewidth',1.2); hold on
+%             h2 = plot(Time,u(2,:),'m','linewidth',1.2); 
+%             xlabel('Time (s)','Interpreter','latex','FontSize',10); 
+%             ylabel('Control input','Interpreter','latex','FontSize',10);
+%             h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
+%             set(h,'FontSize',10,'Interpreter','latex','box','off')
+%             set(gcf,'Position',[250 150 400 200]);
+%     figure; 
+%     subplot(2,1,1); h1 = plot(Time,x(1,:),'b','linewidth',1.2); hold on;
+%                     h2 = plot(Time,x(3,:),'m','linewidth',1.2); 
+%                     xlabel('Time (s)','Interpreter','latex','FontSize',10);
+%                     ylabel('Spacing error (m)','Interpreter','latex','FontSize',10);
+%                     h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
+%                     set(h,'FontSize',10,'Interpreter','latex','box','off')
+%     subplot(2,1,2); h1 = plot(Time,x(2,:),'b','linewidth',1.2); hold on
+%                     h2 = plot(Time,x(4,:),'m','linewidth',1.2); 
+%                     xlabel('Time (s)','Interpreter','latex','FontSize',10);
+%                     ylabel('Velocity error (m/s)','Interpreter','latex','FontSize',10);
+%                     h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
+%                     set(h,'FontSize',10,'Interpreter','latex','box','off')
+%     set(gcf,'Position',[250 150 400 350]);
+% %print(gcf,['../../Figures/timeBlockArrow'],'-painters','-depsc2','-r600')
+% 
+%     
+% %% IOP
+%   [x,y,u,kesi] = dynsim(G,Kiop{6},dt,dx,dy,du,T,x0);
+%     figure; h1 = plot(Time,u(1,:),'b','linewidth',1.2); hold on
+%             h2 = plot(Time,u(2,:),'m','linewidth',1.2); 
+%             xlabel('Time (s)','Interpreter','latex','FontSize',10); 
+%             ylabel('Control input','Interpreter','latex','FontSize',10);
+%             h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
+%             set(h,'FontSize',10,'Interpreter','latex','box','off')
+%             set(gcf,'Position',[250 150 400 200]);
+%     figure; 
+%     subplot(2,1,1); h1 = plot(Time,x(1,:),'b','linewidth',1.2); hold on;
+%                     h2 = plot(Time,x(3,:),'m','linewidth',1.2); 
+%                     xlabel('Time (s)','Interpreter','latex','FontSize',10);
+%                     ylabel('Spacing error (m)','Interpreter','latex','FontSize',10);
+%                     h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
+%                     set(h,'FontSize',10,'Interpreter','latex','box','off')
+%     subplot(2,1,2); h1 = plot(Time,x(2,:),'b','linewidth',1.2); hold on
+%                     h2 = plot(Time,x(4,:),'m','linewidth',1.2); 
+%                     xlabel('Time (s)','Interpreter','latex','FontSize',10);
+%                     ylabel('Velocity error (m/s)','Interpreter','latex','FontSize',10);
+%                     h = legend([h1,h2],'Vehicle 1','Vehicle 2','Location','Northeast');
+%                     set(h,'FontSize',10,'Interpreter','latex','box','off')
+%     set(gcf,'Position',[250 150 400 350]);
