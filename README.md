@@ -34,15 +34,15 @@ Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/Se
 
        >>  [K,H2,info] = clph2(A,B,C,Q,R,userOpts)
 
- Input variables
-     (A,B,C):    system dynamics in discrete time
-     Q:    performance weights on output y
-      R:    performance weights on input u
-  userOpts is a structure and contains the following options
-      N:      Oder of FIR approximation    (default:8)
-      solver: sedumi, sdpt3, csdp or mosek (default)
-      spa:    Distributed control Yes/No   (default: 0)
-      S:      Sparsity pattern for the controller  (default: [])
+1 Input variables
+    - (A,B,C):    system dynamics in discrete time
+    - Q:    performance weights on output y
+    - R:    performance weights on input u
+2. userOpts is a structure and contains the following options
+    - N:      Oder of FIR approximation    (default:8)
+    - solver: sedumi, sdpt3, csdp or mosek (default)
+    - spa:    Distributed control Yes/No   (default: 0)
+    - S:      Sparsity pattern for the controller  (default: [])
       
 ## Related paper
 ```
