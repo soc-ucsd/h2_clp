@@ -46,5 +46,11 @@ Rely on YALMIP to reformulate the above problem into an SDP, then call  Mosek/Se
       S:      Sparsity pattern for the controller  (default: [])
       
 ## Related paper
-Zheng, Y., Furieri, L., Kamgarpour, M., & Li, N. (2019). On the Parameterization of Stabilizing Controllers using Closed-loop Responses. arXiv preprint arXiv:1909.12346.
-
+@misc{zheng2019systemlevel,
+    title={System-level, Input-output and New Parameterizations of Stabilizing Controllers, and Their Numerical Computation},
+    author={Yang Zheng and Luca Furieri and Maryam Kamgarpour and Na Li},
+    year={2019},
+    eprint={1909.12346},
+    archivePrefix={arXiv},
+    primaryClass={math.OC}
+}
